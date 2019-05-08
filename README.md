@@ -26,6 +26,7 @@ pip install xgboost, scikit-learn, tqdm, numpy
 Simply run main.py script:
 ```
 python main.py
+```
 
 ## Reference
 * Shihab HA, Gough J, Cooper DN, Day INM, Gaunt, TR. (2013). Predicting the Functional Consequences of Cancer-Associated Amino Acid Substitutions. Bioinformatics 29:1504-1510
