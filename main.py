@@ -41,8 +41,8 @@ y = np.concatenate((y, np.zeros(len(x_neutral))), axis=0)
 print('splitting data into train and validation set')
 
 x_train, x_valid, y_train, y_valid = train_test_split(x, y, test_size=0.2, random_state=42)
-print('training set size: ' + len(y_train))
-print('validation set size: ' + len(y_valid))
+print('training set size: ' + str(len(y_train)))
+print('validation set size: ' + str(len(y_valid)))
 
 ipdb.set_trace()
 
@@ -61,14 +61,38 @@ else:
 	booster = Booster()
 	booster.load_model('model.bin')
 	model._Booster = booster
-"""
-print('check Nematostella vectensis seq')
-nv_seq = "TSPDIMSSSFYIDSLISKAKSVPTSTSEPRHTYESPVPCSCCWTPTQPDPSSLCQLCIPTSASVHPYMHHVRGASIPSGAGLYSRELQKDHILLQQHYAATEEERLHLASYASSRDPDSPSRGGNSRSKRIRTAYTSMQLLELEKEFSQNRYLSRLRRIQIAALLDLSEKQVKIWFQNRRVKWKKDKKAAQHGTTTETSSCPSSPASTGRMDGV"
-nv_vec = dataset.one_hot(nv_seq)
-predict_data = np.asarray([nv_vec]*2)
+
+print('check cancer cases')
+brca1 = open(os.path.join('data', 'brca1.txt'), 'r').readlines()
+brca1 = ''.join(brca1)
+brca1 = brca1.replace('\n', '')
+
+brca2 = open(os.path.join('data', 'brca2.txt'), 'r').readlines()
+brca2 = ''.join(brca2)
+brca2 = brca2.replace('\n', '')
+
+brca1_vec = dataset.one_hot(brca1)
+brca2_vec = dataset.one_hot(brca2)
+
+predict_data = np.array([[dataset.one_hot('S', max_len=1), dataset.one_hot('F', max_len=1), brca1_vec], # S4F, BC, passenger
+						 [dataset.one_hot('V', max_len=1), dataset.one_hot('M', max_len=1), brca1_vec], # V271M, BC, passenger
+						 [dataset.one_hot('P', max_len=1), dataset.one_hot('S', max_len=1), brca1_vec], # P346S, BC, passenger
+						 [dataset.one_hot('T', max_len=1), dataset.one_hot('M', max_len=1), brca1_vec], # T231M, BC, passenger
+						 [dataset.one_hot('F', max_len=1), dataset.one_hot('L', max_len=1), brca2_vec], # F32L, BC, passenger
+						 [dataset.one_hot('Y', max_len=1), dataset.one_hot('C', max_len=1), brca2_vec], # Y42C, BC, passenger
+						 [dataset.one_hot('T', max_len=1), dataset.one_hot('I', max_len=1), brca2_vec], # T64I, BC, passenger
+						 [dataset.one_hot('K', max_len=1), dataset.one_hot('R', max_len=1), brca2_vec], # K53R, BC, passenger
+						 [dataset.one_hot('I', max_len=1), dataset.one_hot('L', max_len=1), brca2_vec], # I982L, Normal, passenger
+						 [dataset.one_hot('M', max_len=1), dataset.one_hot('V', max_len=1), brca2_vec], # M784V, Normal, passenger
+						])
+
+start = np.array(list(predict_data[:,0]), dtype=np.float)
+end = np.array(list(predict_data[:,1]), dtype=np.float)
+seq = np.array(list(predict_data[:,2]), dtype=np.float)
+predict_data = np.concatenate((start, end, seq), axis=1)
+
 prediction = model.predict_proba(predict_data)
 print('prediction: ')
 print(prediction)
-"""
 ipdb.set_trace()
 print('finished execution')
